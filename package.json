@@ -1,0 +1,20 @@
+{
+  "name": "partjs-elements",
+  "version": "0.0.0",
+  "description": "Components pack of partjs framework.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:partjs/elements.git"
+  },
+  "author": "jollen <jollen@jollen.org> (http://jollen.org/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/partjs/elements/issues"
+  },
+  "homepage": "https://github.com/partjs/elements",
+  "dependencies": {
+    "html-to-vdom": "^0.4.0",
+    "virtual-dom": "^1.1.0"
+  }
+}

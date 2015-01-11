@@ -1,0 +1,10 @@
+*.swp
+*.swo
+.sass-cache
+.local
+*.DS_Store
+node_modules
+*.pid
+dist
+*.sublime-*
+*.log
