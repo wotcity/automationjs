@@ -15,13 +15,13 @@
 /**
  * Element Class (ViewModel)
  */
-var ElementSpotNews = require('./src/elementSpotNews');
+var ElementSpot = require('./src/elementSpot');
 var ElementSpotIntro = require('./src/elementSpotIntro');
 
 /**
  * Module
  */
 module.exports = {
-    SpotNews: ElementSpotNews,
+    Spot: ElementSpot,
     SpotIntro: ElementSpotIntro
 };

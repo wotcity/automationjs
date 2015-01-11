@@ -19,7 +19,7 @@ var convertHTML = require('html-to-vdom')({
 /*
  * Class
  */
-var ElementSpotNews = function(options) {
+var ElementSpot = function(options) {
 	// data
 	this.el = options.el;
 	this.model = options.model;
@@ -37,7 +37,7 @@ var ElementSpotNews = function(options) {
     this.model.bind('change', this.composite, this);
 };
 
-ElementSpotNews.prototype.composite = function(id) {
+ElementSpot.prototype.composite = function(id) {
 	// Get new view and build the subtree
 	var model = this.collection.at(id);
 	var tree = model.get('vtree');
@@ -59,7 +59,7 @@ ElementSpotNews.prototype.composite = function(id) {
 	model.set('element', element);
 };
 
-ElementSpotNews.prototype.addWidget = function(options) {
+ElementSpot.prototype.add = function(options) {
 	var model = new this.model();
 
 	// Data persistence
@@ -86,6 +86,8 @@ ElementSpotNews.prototype.addWidget = function(options) {
 	model.set('element', element);
 	this.collection.add(model, {at: this.count});
 	this.count++;
+
+	return this;
 };
 
-module.exports = ElementSpotNews;
+module.exports = ElementSpot;
