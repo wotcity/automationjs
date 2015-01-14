@@ -1,10 +1,10 @@
 /**
  * Modules
  */
-//var $ = require('jquery');
-//var _ = require('underscore');
-//var Backbone = require('backbone');
-//Backbone.$ = $;
+var $ = require('jquery');
+var _ = require('underscore');
+var Backbone = require('backbone');
+Backbone.$ = $;
 
 /**
  * Benchmark
@@ -15,13 +15,13 @@
 /**
  * Element Class (ViewModel)
  */
-var ElementSpot = require('./src/elementSpot');
-var ElementSpotIntro = require('./src/elementSpotIntro');
+var Automation = require('./src/Automation');
+var SpotList = require('./src/SpotList');
 
 /**
  * Module
  */
 module.exports = {
-    Spot: ElementSpot,
-    SpotIntro: ElementSpotIntro
+	Automation: Automation,
+    SpotList: SpotList,
 };

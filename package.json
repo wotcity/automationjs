@@ -1,6 +1,6 @@
 {
   "name": "partjs-elements",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Components pack of partjs framework.",
   "main": "index.js",
   "repository": {

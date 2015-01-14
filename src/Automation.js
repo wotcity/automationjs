@@ -19,7 +19,7 @@ var convertHTML = require('html-to-vdom')({
 /*
  * Class
  */
-var ElementSpotIntro = function(options) {
+var Automation = function(options) {
 	// data
 	this.el = options.el;
 	this.model = options.model;
@@ -37,15 +37,15 @@ var ElementSpotIntro = function(options) {
     this.model.bind('change', this.composite, this);
 };
 
-ElementSpotIntro.prototype.composite = function(id) {
+Automation.prototype.composite = function(id) {
 	// Get new view and build the subtree
 	var model = this.collection.at(id);
 	var tree = model.get('vtree');
 	var element = model.get('element');
 
-	// model state change
+	// sync with model state
+
 	// create the new tree
-	model.set('title', 'click');
 	var innerHtml = this.templateFunc( model.attributes )
 						.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'');
 	var newTree = convertHTML(innerHtml);
@@ -59,16 +59,16 @@ ElementSpotIntro.prototype.composite = function(id) {
 	model.set('element', element);
 };
 
-ElementSpotIntro.prototype.addWidget = function(options) {
+Automation.prototype.add = function(options) {
 	var model = new this.model();
 
 	// Data persistence
-	model.set('title', options.title);
-	model.set('href', options.href);
-	model.set('img', options.img);
-	model.set('intro', options.intro);
-	
-	model.set('spotId', this.count);
+	for(var prop in options) {
+	    if(options.hasOwnProperty(prop))
+		    model.set(prop, options[prop]);
+	}
+
+	model.set('listId', this.count);
 
 	// 1. Get view and build the subtree (virtual DOM)
 	//    - remove invalid characters
@@ -76,7 +76,7 @@ ElementSpotIntro.prototype.addWidget = function(options) {
 						.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'');	
 	var tree = convertHTML(innerHtml);
 
-	// 2. Create an element
+	// 2. Create the list item (sub element)
 	var element = createElement(tree);
 
 	// 3: composition boundary
@@ -87,6 +87,8 @@ ElementSpotIntro.prototype.addWidget = function(options) {
 	model.set('element', element);
 	this.collection.add(model, {at: this.count});
 	this.count++;
+
+	return this;
 };
 
-module.exports = ElementSpotIntro;
+module.exports = Automation;
