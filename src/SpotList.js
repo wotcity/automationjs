@@ -47,7 +47,7 @@ Function.prototype.extend = function(parent) {
  * public class SpotList extends Automation {}
  */
 var SpotList = function(options) {
-	this.call(options);
+	this.super(options);
 };
 
 SpotList.extend(Automation);
