@@ -20,6 +20,11 @@ var convertHTML = require('html-to-vdom')({
  * Class
  */
 var Automation = function(options) {
+
+};
+
+// constructor
+Automation.prototype.call = function(options) {
 	// data
 	this.el = options.el;
 	this.model = options.model;

@@ -15,13 +15,13 @@ Backbone.$ = $;
 /**
  * Element Class (ViewModel)
  */
-var Automation = require('./src/Automation');
 var SpotList = require('./src/SpotList');
+var Article = require('./src/Article');
 
 /**
  * Module
  */
 module.exports = {
-	Automation: Automation,
     SpotList: SpotList,
+    Article: Article
 };

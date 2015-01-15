@@ -37,14 +37,20 @@ var convertHTML = require('html-to-vdom')({
 var Automation = require('./Automation');
 
 /*
- * Class
+ * Prototype
  */
-var SpotList = function(options) {
-	console.log('constructor: ' + options);
-	//Automation.call(options);
+Function.prototype.extend = function(parent) {
+  this.prototype = Object.create(parent.prototype);
 };
 
-//SpotList.prototype = new Automation();
-//SpotList.prototype.constructor = SpotList;
+/*
+ * public class SpotList extends Automation {}
+ */
+var SpotList = function(options) {
+	this.call(options);
+};
+
+SpotList.extend(Automation);
+SpotList.prototype.constructor = SpotList;
 
 module.exports = SpotList;
