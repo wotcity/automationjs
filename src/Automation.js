@@ -57,6 +57,11 @@ Automation.ChildElementContainerFactory = function () {
       // store the element and index by cid
       this._elements[cid] = element;
 
+      // bind model states
+      model.on('change', function() {
+      	this.composite(cid);
+      }.bind(this));
+
       // store the model and index by cid
       this._models[cid] = model;
 
@@ -169,9 +174,6 @@ Automation.prototype.composite = function(cid) {
 	var element = this.container.findElementByCid(cid);
 	var model = this.container.findModelByCid(cid);
 
-	// TODO: sync with model state
-
-
 	// create the new tree
 	var innerHtml = this.templateFunc( model.attributes )
 						.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,'');
@@ -222,5 +224,10 @@ Automation.prototype.add = function(options) {
 
 	return this;
 };
+
+Automation.prototype.notify = function(cid, cmd) {	
+	if (cmd === 'forceUpdateModel')
+		this.container.findModelByCid(cid).fetch();
+}
 
 module.exports = Automation;
