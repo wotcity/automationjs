@@ -55,21 +55,37 @@ Automation.ChildElementContainerFactory = function () {
         , cid = options.cid;
 
       // store the element and index by cid
-      this._elements[cid] = cid;
+      this._elements[cid] = element;
 
       // store the model and index by cid
       this._models[cid] = model;
 
       // store the virtual dom (vtree) and index by cid
-      this._vtrees[cid] = model;
+      this._vtrees[cid] = vtree;
 
       this._updateLength();
       return this;
     },
 
-    // retrieve a view by its `cid` directly
-    findByCid: function(cid){
+    // retrieve a element by its `cid` directly
+    findElementByCid: function(cid){
       return this._elements[cid];
+    },
+
+    findVtreeByCid: function(cid) {
+      return this._vtrees[cid];
+    },
+
+    findModelByCid: function(cid) {
+      return this._models[cid];
+    },
+
+    updateVtreeByCid: function(cid, vtree) {
+      this._vtrees[cid] = vtree;
+    },
+
+    updateElementByCid: function(cid, element) {
+      this._elements[cid] = element;
     },
 
     // Remove a view by cid
@@ -147,13 +163,14 @@ Automation.prototype.super = function(options) {
     this.model.bind('change', this.composite, this);
 };
 
-Automation.prototype.composite = function(id) {
+Automation.prototype.composite = function(cid) {
 	// Get new view and build the subtree
-	var model = this.collection.at(id);
-	var tree = model.get('vtree');
-	var element = model.get('element');
+	var tree = this.container.findVtreeByCid(cid);
+	var element = this.container.findElementByCid(cid);
+	var model = this.container.findModelByCid(cid);
 
-	// sync with model state
+	// TODO: sync with model state
+
 
 	// create the new tree
 	var innerHtml = this.templateFunc( model.attributes )
@@ -164,9 +181,9 @@ Automation.prototype.composite = function(id) {
 	var patches = diff(tree, newTree);
 	element = patch(element, patches);
 
-	// finalize
-	model.set('vtree', newTree);
-	model.set('element', element);
+	// update vtree
+	this.container.updateVtreeByCid(cid, newTree);
+	this.container.updateElementByCid(cid, element);
 };
 
 Automation.prototype.add = function(options) {	
@@ -179,7 +196,6 @@ Automation.prototype.add = function(options) {
 	}
 
 	// child ID which is automatically increased
-	this.count++;
 	model.set('cid', this.count);
 
 	// 1. Get view and build the subtree (virtual DOM)
@@ -201,6 +217,8 @@ Automation.prototype.add = function(options) {
 		model: model,
 		cid: this.count
 	});
+
+	this.count++;
 
 	return this;
 };
