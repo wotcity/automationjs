@@ -1,3 +1,12 @@
+// AutomationJS
+// ------------
+// v0.1.0-alpha1
+//
+// Copyright (c) 2015 Jollen Chen, Mokoversity Inc.
+// Distributed under MIT license
+//
+// http://automationjs.com
+
 /*
  * <SpotList></SpotList>
  *
@@ -14,43 +23,32 @@
  */
 
 /**
- * Browserify
- */
-var h = require('virtual-dom/h');
-var diff = require('virtual-dom/diff');
-var patch = require('virtual-dom/patch');
-var createElement = require('virtual-dom/create-element');
-var VNode = require('virtual-dom/vnode/vnode');
-var VText = require('virtual-dom/vnode/vtext');
-
-/**
- * Setup
- */
-var convertHTML = require('html-to-vdom')({
-    VNode: VNode,
-    VText: VText
-});
-
-/**
  * Imports
  */
 var Automation = require('./Automation');
 
-/*
- * Prototype
- */
-Function.prototype.extend = function(parent) {
-  this.prototype = Object.create(parent.prototype);
-};
 
-/*
- * public class SpotList extends Automation {}
+/**
+ * class SpotList
  */
 var SpotList = function(options) {
 	this.super(options);
 };
 
+/*
+ * public class SpotList extends Automation {}
+ */
 SpotList.extend(Automation);
 SpotList.prototype.constructor = SpotList;
+
+SpotList.prototype.add = function(options) {
+	// super
+	var model = this._add(options);
+};
+
+SpotList.prototype.composite = function(cid) {
+	// super
+	this._composite(cid);
+};
 
 module.exports = SpotList;

@@ -1,3 +1,12 @@
+// AutomationJS
+// ------------
+// v0.1.0-alpha1
+//
+// Copyright (c) 2015 Jollen Chen, Mokoversity Inc.
+// Distributed under MIT license
+//
+// http://automationjs.com
+
 /**
  * Browserify
  */
@@ -7,6 +16,7 @@ var patch = require('virtual-dom/patch');
 var createElement = require('virtual-dom/create-element');
 var VNode = require('virtual-dom/vnode/vnode');
 var VText = require('virtual-dom/vnode/vtext');
+var Backbone = require('backbone');
 var _ = require('underscore');
 
 /**
@@ -18,10 +28,36 @@ var convertHTML = require('html-to-vdom')({
 });
 
 /*
+ * Prototype
+ */
+Function.prototype.extend = function(parent) {
+  _.extend(this.prototype, parent.prototype);
+};
+
+/*
  * Class
  */
 var Automation = function() {
 
+};
+
+/**
+ * EventAggregator can be used to decouple various parts
+ * of an application through event-driven architecture.
+ *
+ * Borrowing this code from https://github.com/marionettejs/backbone.wreqr/blob/master/src/wreqr.eventaggregator.js
+ */
+Automation.EventAggregator = function () {
+
+  var EA = function(){};
+
+  // Copy the *extend* function used by Backbone's classes
+  EA.extend = Backbone.Model.extend;
+
+  // Copy the basic Backbone.Events on to the event aggregator
+  _.extend(EA.prototype, Backbone.Events);
+
+  return new EA();
 };
 
 /**
@@ -30,21 +66,21 @@ var Automation = function() {
  * The container to store, retrieve child elements.
  * Borrowing this code from https://github.com/marionettejs/backbone.babysitter
  */
-Automation.ChildElementContainerFactory = function () {
+Automation.ChildElementContainer = function (context) {
 
   // Container Constructor
   // ---------------------
 
-  var Container = function(elem){
+  var Container = function() {
     this._elements = {};
     this._models = {};
     this._vtrees = {};
+    this._context = context;
   };
 
   // Container Methods
   // -----------------
-
-  Container.prototype = Object.create({
+  _.extend(Container.prototype, {
     // Add an element to this container. Stores the element
     // by `cid` and makes it searchable by the model
     // cid (and model itself). 
@@ -56,11 +92,6 @@ Automation.ChildElementContainerFactory = function () {
 
       // store the element and index by cid
       this._elements[cid] = element;
-
-      // bind model states
-      model.on('change', function() {
-      	this.composite(cid);
-      }.bind(this));
 
       // store the model and index by cid
       this._models[cid] = model;
@@ -74,7 +105,10 @@ Automation.ChildElementContainerFactory = function () {
 
     // retrieve a element by its `cid` directly
     findElementByCid: function(cid){
-      return this._elements[cid];
+      if (_.isObject(this._elements[cid]))
+        return this._elements[cid];
+
+      return null;
     },
 
     findVtreeByCid: function(cid) {
@@ -107,14 +141,28 @@ Automation.ChildElementContainerFactory = function () {
       return this;
     },
 
-    // Call a method on every view in the container,
+    // Fetch data of every element
+    fetch: function() {
+      _.each(this._models, function(model) {
+      	var cid = model.get('cid');
+
+        model.fetch({
+        	success: function(model, response, options) {
+        		if (_.isFunction(model.parseJSON))
+        			model.parseJSON(response);
+        	}.bind(model)
+        });
+      }.bind(this));
+    },
+
+    // Call a method on every element in the container,
     // passing parameters to the call method one at a
     // time, like `function.call`.
     call: function(method){
       this.apply(method, _.tail(arguments));
     },
 
-    // Apply a method on every view in the container,
+    // Apply a method on every element in the container,
     // passing parameters to the call method one at a
     // time, like `function.apply`.
     apply: function(method, args){
@@ -161,18 +209,29 @@ Automation.prototype.super = function(options) {
 	this.templateFunc = options.template;
 
 	// private properties
-	this.count = 0;
+	this._count = 0;
+	this._handlers = [];
 
 	// constructor
-	this.container = new Automation.ChildElementContainerFactory();
-    this.model.bind('change', this.composite, this);
+	this._container = new Automation.ChildElementContainer();
+	this._eventAggragator = new Automation.EventAggregator();
+
+	// core event handling
+	this._eventAggragator.on('forceUpdateAll', function() {
+		// update every model in the container
+		this._container.fetch();
+	}.bind(this));
 };
 
-Automation.prototype.composite = function(cid) {
-	// Get new view and build the subtree
-	var tree = this.container.findVtreeByCid(cid);
-	var element = this.container.findElementByCid(cid);
-	var model = this.container.findModelByCid(cid);
+// The boundary compositor of shadow DOM.
+// It builds the new subtree and patch DOM.
+Automation.prototype._composite = function(cid) {
+	var tree = this._container.findVtreeByCid(cid)
+	,	element = this._container.findElementByCid(cid)
+	,	model = this._container.findModelByCid(cid);
+
+	if (element === null)
+		return;
 
 	// create the new tree
 	var innerHtml = this.templateFunc( model.attributes )
@@ -184,11 +243,11 @@ Automation.prototype.composite = function(cid) {
 	element = patch(element, patches);
 
 	// update vtree
-	this.container.updateVtreeByCid(cid, newTree);
-	this.container.updateElementByCid(cid, element);
+	this._container.updateVtreeByCid(cid, newTree);
+	this._container.updateElementByCid(cid, element);
 };
 
-Automation.prototype.add = function(options) {	
+Automation.prototype._add = function(options) {	
 	var model = new this.model();
 
 	// Data persistence
@@ -197,8 +256,14 @@ Automation.prototype.add = function(options) {
 		    model.set(prop, options[prop]);
 	}
 
-	// child ID which is automatically increased
-	model.set('cid', this.count);
+	// child ID is automatically increased
+	model.set('cid', this._count);
+
+	// bind model change event to boundary compositor
+    model.bind('change', function(model) {
+    	var cid = model.get('cid');
+    	this._composite(cid);
+    }.bind(this), model);
 
 	// 1. Get view and build the subtree (virtual DOM)
 	//    - remove invalid characters
@@ -213,21 +278,20 @@ Automation.prototype.add = function(options) {
 	this.el.append(element); 
 
 	// store this element
-	this.container.add({
+	this._container.add({
 		vtree: tree,
 		element: element,
 		model: model,
-		cid: this.count
+		cid: this._count
 	});
 
-	this.count++;
+	this._count++;
 
-	return this;
+	return model;
 };
 
-Automation.prototype.notify = function(cid, cmd) {	
-	if (cmd === 'forceUpdateModel')
-		this.container.findModelByCid(cid).fetch();
+Automation.prototype.trigger = function(event) {
+	this._eventAggragator.trigger(event);
 }
 
 module.exports = Automation;
