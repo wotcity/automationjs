@@ -1,20 +1,19 @@
 {
-  "name": "partjs-elements",
-  "version": "0.0.2",
-  "description": "Components pack of partjs framework.",
+  "name": "automationjs",
+  "version": "0.1.0-alpha1",
+  "description": "Component library of partjs framework.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:partjs/elements.git"
+    "url": "git@github.com:partjs/automationjs.git"
   },
   "author": "jollen <jollen@jollen.org> (http://jollen.org/)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/partjs/elements/issues"
+    "url": "https://github.com/partjs/automation/issues"
   },
-  "homepage": "https://github.com/partjs/elements",
+  "homepage": "https://github.com/partjs/automation",
   "dependencies": {
-    "backbone.marionette": "^2.3.1",
     "html-to-vdom": "^0.4.0",
     "virtual-dom": "^1.1.0"
   }
