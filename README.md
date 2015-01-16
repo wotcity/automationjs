@@ -1,12 +1,12 @@
-## Elements
+## AutomationJS
 
-The components library of partjs project.
+Component library of partjs project.
 
 ## Install
 
 ```
 $ cd <directory-to-your-project>
-$ npm i partjs-elements --save
+$ npm i automationjs --save
 ```
 
 ## Usage
