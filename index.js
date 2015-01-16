@@ -16,12 +16,10 @@ Backbone.$ = $;
  * Element Class (ViewModel)
  */
 var SpotList = require('./src/SpotList');
-var Article = require('./src/Article');
 
 /**
  * Module
  */
 module.exports = {
-    SpotList: SpotList,
-    Article: Article
+    SpotList: SpotList
 };
