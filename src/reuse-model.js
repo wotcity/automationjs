@@ -27,28 +27,11 @@
  */
 var Automation = require('./Automation');
 
-
 /**
  * class SpotList
  */
-var SpotList = function(options) {
-	this.super(options);
-};
-
-/*
- * public class SpotList extends Automation {}
- */
-SpotList.extend(Automation);
-SpotList.prototype.constructor = SpotList;
-
-SpotList.prototype.add = function(options) {
-	// super
-	var model = this._add(options);
-};
-
-SpotList.prototype.composite = function(cid) {
-	// super
-	this._composite(cid);
-};
+var SpotList = new Automation({
+	
+});
 
 module.exports = SpotList;
