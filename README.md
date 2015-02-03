@@ -13,6 +13,15 @@ $ npm i automationjs --save
 
 Please refer to http://partjs.io
 
+## History
+
+* v0.1.0: 2015.2.3
+ * Initial ViewModel design
+ * Support Virtual DOM compostion
+ * Basic event trigger system
+ * Data model decoupling
+ * Support WebSocket real-time data
+
 ## License
 
 MIT
