@@ -1,6 +1,6 @@
 // AutomationJS
 // ------------
-// v0.1.0
+// v0.1.1
 //
 // Copyright (c) 2015 Jollen Chen, Mokoversity Inc.
 // Distributed under MIT license
@@ -255,7 +255,7 @@ Automation.prototype._composite = function(cid) {
 	this._container.updateElementByCid(cid, element);
 };
 
-Automation.prototype._add = function(options, ws) {	
+Automation.prototype._add = function(options) {	
 	var model = new this.model();
 
 	// Data persistence
@@ -268,10 +268,10 @@ Automation.prototype._add = function(options, ws) {
 	model.set('cid', this._count);
 
 	// bind model change event to boundary compositor
-    model.bind('change', function(model) {
-    	var cid = model.get('cid');
-    	this._composite(cid);
-    }.bind(this), model);
+  model.bind('change', function(model) {
+  	var cid = model.get('cid');
+  	this._composite(cid);
+  }.bind(this), model);
 
 	// 1. Get view and build the subtree (virtual DOM)
 	//    - remove invalid characters
@@ -286,23 +286,23 @@ Automation.prototype._add = function(options, ws) {
 	this.el.append(element); 
 
 	// 4. real-time data push
-    // check if this model is a websocket
-    var wsUrl = ''
-    	, wsServer = {};
-  
-    if (_.isFunction(model.wsUrl))
-	  wsUrl = model.wsUrl();
-  
-    if (/^ws:\/\//.test(wsUrl)) { 
-      wsServer = this._createChannel(this._count, wsUrl, {
-        onopen: function() {
-        },
-        onclose: function() {
-        },
-        onerror: function() {
-        }
-      });
-    };
+  // check if this model is a websocket
+  var wsUrl = ''
+  	, wsServer = {};
+
+  if (_.isFunction(model.wsUrl))
+    wsUrl = model.wsUrl();
+
+  if (/^ws:\/\//.test(wsUrl)) { 
+    wsServer = this._createChannel(this._count, wsUrl, {
+      onopen: function() {
+      },
+      onclose: function() {
+      },
+      onerror: function() {
+      }
+    });
+  };
 
 	// 5. store this element
 	this._container.add({
@@ -349,11 +349,13 @@ Automation.prototype._createChannel = function(cid, url, cbs) {
   	var model = this._container.findModelByCid(cid);
 
   	// update model
-	for(var prop in options) {
-	    if(options.hasOwnProperty(prop))
-		    model.set(prop, options[prop]);
+  	for(var prop in options) {
+  	    if(options.hasOwnProperty(prop))
+  		    model.set(prop, options[prop]);
+  	}
 
-	}
+    // notify View
+    model.trigger('notify.change');
 
   	// composite by 'cid'
     this.composite(cid);
@@ -408,6 +410,7 @@ Automation.prototype.extend = function(options) {
   EL.prototype.add = function(options) {
     // super
     var model = this._add(options);
+    return model;
   };
 
   EL.prototype.composite = function(cid) {
