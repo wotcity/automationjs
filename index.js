@@ -365,7 +365,7 @@ Automation.prototype._createChannel = function(cid, url, cbs) {
   }.bind(this);
 
   // Let us open a web socket
-  ws = new WebSocket(url /*, ['rest-object'] */);
+  ws = new WebSocket(url);
 
   if (typeof(cbs) === 'undefined' || cbs.onopen !== 'function')
     cbs.onopen = onopen;
