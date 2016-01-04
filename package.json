@@ -1,6 +1,6 @@
 {
   "name": "automationjs",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Component library of partjs framework.",
   "main": "index.js",
   "repository": {

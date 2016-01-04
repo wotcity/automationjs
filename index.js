@@ -1,8 +1,8 @@
 // AutomationJS
 // ------------
-// v0.1.1
+// v0.2.0
 //
-// Copyright (c) 2015 Jollen Chen, Mokoversity Inc.
+// Copyright (c) 2015 Jollen Chen, WoT.City Inc.
 // Distributed under MIT license
 //
 // http://automationjs.com
@@ -293,7 +293,7 @@ Automation.prototype._add = function(options) {
   if (_.isFunction(model.wsUrl))
     wsUrl = model.wsUrl();
 
-  if (/^ws:\/\//.test(wsUrl)) { 
+  if (/^ws:\/\//.test(wsUrl) || /^wss:\/\//.test(wsUrl)) { 
     wsServer = this._createChannel(this._count, wsUrl, {
       onopen: function() {
       },
